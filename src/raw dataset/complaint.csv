@@ -1,0 +1,152 @@
+email_subject,email_body,email_category,urgency level
+Credit Reporting & Monitoring,Incorrect information on credit report,complaint,high
+Debt & Collections,Disclosure verification of debt,complaint,high
+ collection,"Loan modification,collection,foreclosure",complaint,high
+Loans & Mortgages,Credit determination,complaint,high
+ payments,"Loan servicing, payments, escrow account",complaint,high
+ sending money,"Making/receiving payments, sending money",complaint,high
+Loans & Mortgages,Settlement process and costs,complaint,high
+Loans & Mortgages,Dealing with my lender or servicer,complaint,high
+Fraud,Fraud or scam,complaint,high
+ closing,"Account opening, closing, or management got failure",complaint,high
+Loans & Mortgages,Can't repay my loan,complaint,high
+Loans & Mortgages,Problems when you are unable to pay,complaint,high
+Credit Reporting & Monitoring,Credit reporting company's investigation,complaint,high
+ marketing or disclosures,"Advertising, marketing or disclosures",complaint,high
+Fraud,Improper contact or sharing of info,complaint,high
+Fraud,Identity theft / Fraud / Embezzlement,complaint,high
+Accounts & Banking Services,Customer service / Customer relations,complaint,high
+Credit Reporting & Monitoring,Incorrect information on credit report,complaint,high
+Payments & Transactions,False statements or representation,complaint,high
+ opening,Problems caused by my funds being low,complaint,high
+Payments & Transactions,"Managing, opening, or closing account",complaint,high
+Loans & Mortgages,Deposits and withdrawals failure,complaint,high
+Loans & Mortgages,Managing the loan or lease,complaint,high
+Cards & Access,APR or interest rate are increasing,complaint,high
+ originator,Using a debit or ATM card failure,complaint,high
+Payments & Transactions,"Application, originator, mortgage broker",complaint,high
+Debt & Collections,Balance transfer failed,complaint,high
+Payments & Transactions,Cont'd attempts collect debt not owed,complaint,high
+Credit Reporting & Monitoring,Transaction issue,complaint,high
+Loans & Mortgages,Credit monitoring or identity protection,complaint,high
+Loans & Mortgages,Taking out the loan or lease,complaint,high
+Fraud,Credit line increase/decrease,complaint,high
+Payments & Transactions,Communication tactics,complaint,high
+Loans & Mortgages,Billing disputes,complaint,high
+Loans & Mortgages,Bankruptcy,complaint,high
+Debt & Collections,Payoff process,complaint,high
+Payments & Transactions,Taking/threatening an illegal action,complaint,high
+Loans & Mortgages,Money was not available when promised,complaint,high
+Loans & Mortgages,Delinquent account,complaint,high
+Credit Reporting & Monitoring,Applied for loan/did not receive money,complaint,high
+Advertising & Marketing,Improper use of my credit report,complaint,high
+Payments & Transactions,Advertising and marketing,complaint,high
+Payments & Transactions,Lost or stolen money order,complaint,high
+Accounts & Banking Services,Charged fees or interest I didn't expect,complaint,high
+Accounts & Banking Services,Closing/Cancelling account,complaint,high
+Payments & Transactions,Other service issues,complaint,high
+Payments & Transactions,Unauthorized transactions/trans. issues,complaint,high
+Loans & Mortgages,Billing statement,complaint,high
+Loans & Mortgages,Shopping for a loan or lease,complaint,high
+Fraud,Credit card protection / Debt protection,complaint,high
+Loans & Mortgages,Struggling to pay mortgage,complaint,high
+Loans & Mortgages,Credit decision / Underwriting,complaint,high
+Payments & Transactions,Late fee,complaint,high
+Loans & Mortgages,Can't contact lender,complaint,high
+Credit Reporting & Monitoring,Unable to get credit report/credit score,complaint,high
+Payments & Transactions,Charged bank acct wrong day or amt,complaint,high
+Payments & Transactions,Other transaction issues,complaint,high
+Fraud,Unsolicited issuance of credit card,complaint,high
+Payments & Transactions,Trouble during payment process,complaint,high
+Credit Reporting & Monitoring,Improper use of your report,complaint,high
+Credit Reporting & Monitoring,Unable to get your credit report or credit score,complaint,high
+Credit Reporting & Monitoring,Incorrect information on your report,complaint,high
+Payments & Transactions,Problem with a lender or other company charging your account,complaint,high
+Debt & Collections,Attempts to collect debt not owed,complaint,high
+Loans & Mortgages,Dealing with your lender or servicer ,complaint,high
+Debt & Collections,Took or threatened to take negative or legal action,complaint,high
+Fraud,Problem with fraud alerts or security freezes,complaint,high
+Credit Reporting & Monitoring,Problem with a credit reporting company's investigation into an existing problem,complaint,high
+Debt & Collections,Written notification about debt,complaint,high
+Loans & Mortgages,Problem with the payoff process at the end of the loan,complaint,high
+Loans & Mortgages,Struggling to repay your loan,complaint,high
+Loans & Mortgages,Applying for a mortgage or refinancing an existing mortgage,complaint,high
+Credit Reporting & Monitoring,Credit monitoring or identity theft protection services,complaint,high
+Payments & Transactions,Fees or interest,complaint,high
+ terms,"Other features, terms, or problems",complaint,high
+Accounts & Banking Services,Closing an account,complaint,high
+Accounts & Banking Services,Managing an account,complaint,high
+ including promotional offers,"Advertising and marketing, including promotional offers",complaint,high
+Payments & Transactions,Problem with a purchase shown on your statement,complaint,high
+Payments & Transactions,Other transaction problem,complaint,high
+Fraud,Threatened to contact someone or share information improperly,complaint,high
+Loans & Mortgages,Closing on a mortgage,complaint,high
+Loans & Mortgages,Getting a loan or lease,complaint,high
+Advertising & Marketing,Confusing or missing disclosures,complaint,high
+Payments & Transactions,Unexpected or other fees,complaint,high
+Loans & Mortgages,Problems at the end of the loan or lease,complaint,high
+Payments & Transactions,Struggling to pay your bill,complaint,high
+Payments & Transactions,Charged fees or interest you didn't expect,complaint,high
+Accounts & Banking Services,Closing your account,complaint,high
+Payments & Transactions,Problem when making payments,complaint,high
+Loans & Mortgages,Struggling to pay your loan,complaint,high
+Accounts & Banking Services,Problem with a company's investigation into an existing issue,complaint,high
+Payments & Transactions,Problem caused by your funds being low,complaint,high
+Accounts & Banking Services,Problem with additional add-on products or services,complaint,high
+Accounts & Banking Services,Opening an account is issue,complaint,high
+Cards & Access,Trouble using the card,complaint,high
+Cards & Access,Trouble using your card,complaint,high
+Accounts & Banking Services,Problem with customer service,complaint,high
+Advertising & Marketing,Incorrect/missing disclosures or info,complaint,high
+Fraud,Received a loan I didn't apply for,complaint,high
+Loans & Mortgages,Getting a line of credit,complaint,high
+Payments & Transactions,Wrong amount charged or received,complaint,high
+Payments & Transactions,Problem with a purchase or transfer,complaint,high
+Payments & Transactions,Unauthorized transactions or other transaction problem,complaint,high
+ opening,"Managing, opening, or closing your mobile wallet account",complaint,high
+Payments & Transactions,Balance transfer fee,complaint,high
+Loans & Mortgages,Repaying your loan,complaint,high
+Loans & Mortgages,Managing the line of credit,complaint,high
+Loans & Mortgages,Application processing delay,complaint,high
+Cards & Access,Problem getting a card or closing an account,complaint,high
+Payments & Transactions,Payment to acct not credited,complaint,high
+Payments & Transactions,Can't stop charges to bank account,complaint,high
+Loans & Mortgages,Lender repossessed or sold the vehicle,complaint,high
+Payments & Transactions,Lost or stolen check,complaint,high
+ savings or rewards features,"Overdraft, savings or rewards features",complaint,high
+Payments & Transactions,Loan payment wasn't credited to your account,complaint,high
+Payments & Transactions,Incorrect exchange rate,complaint,high
+Payments & Transactions,Overlimit fee,complaint,high
+Advertising & Marketing,Advertising,complaint,high
+Payments & Transactions,Cash advance,complaint,high
+Loans & Mortgages,Forbearance / Workout plans,complaint,high
+Loans & Mortgages,Applying for a mortgage,complaint,high
+Loans & Mortgages,Vehicle was repossessed or sold the vehicle,complaint,high
+Fraud,Identity theft protection or other monitoring services,complaint,high
+Fraud,Received a loan you didn't apply for,complaint,high
+Accounts & Banking Services,Other service problem,complaint,high
+Loans & Mortgages,Credit limit changed,complaint,high
+Accounts & Banking Services,Sale of account,complaint,high
+Loans & Mortgages,Can't contact lender or servicer,complaint,high
+Advertising & Marketing,Confusing or misleading advertising or marketing,complaint,high
+Payments & Transactions,Fees high,complaint,high
+Loans & Mortgages,Lender damaged or destroyed property,complaint,high
+Payments & Transactions,Excessive fees,complaint,high
+Payments & Transactions,Problem with overdraft,complaint,high
+ savings,"Overdraft, savings, or rewards features",complaint,high
+Payments & Transactions,Money was taken from your bank account on the wrong day or for the wrong amount,complaint,high
+Payments & Transactions,Can't stop withdrawals from your bank account,complaint,high
+ but didn't receive money,"Was approved for a loan, but didn't receive money",complaint,high
+Payments & Transactions,Cash advance fee,complaint,high
+Debt & Collections,Collection debt dispute,complaint,high
+Payments & Transactions,Adding money,complaint,high
+Payments & Transactions,Unexpected/Other fees,complaint,high
+Payments & Transactions,Convenience checks,complaint,high
+Loans & Mortgages,Lender damaged or destroyed vehicle,complaint,high
+Loans & Mortgages,Lender sold the property,complaint,high
+Accounts & Banking Services,Payment disappear - service got disconnected,complaint,high
+Telecom & ISP Services,Comcast Imposed a New Usage Cap of 300GB that punishes streaming.,complaint,high
+Telecom & ISP Services,Comcast not working and no service to boot,complaint,high
+Telecom & ISP Services,ISP Charging for arbitrary data limits with overage fees,complaint,high
+Telecom & ISP Services,Throttling service and unreasonable data caps,complaint,high
+Telecom & ISP Services,Comcast refuses to help troubleshoot and correct my service.,complaint,high
