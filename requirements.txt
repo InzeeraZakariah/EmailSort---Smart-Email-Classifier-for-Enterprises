@@ -2,3 +2,6 @@ pandas
 numpy
 nltk
 sklearn
+torch
+transformers
+
