@@ -34,6 +34,44 @@ Key aspects of the vectorization process:
 - Ignore overly common words.  
 - Include both single words (unigrams) and pairs of words (bigrams).
 
-The result is a sparse matrix where each row represents an email and each column represents a word or phrase feature.
+## **Email Category Classification Part**
+
+## Splitting Data into Training and Testing Set for the Model Training
+
+  Several models were trained to classify emails into categories 
+  The pipeline explored both traditional machine learning algorithms and modern transformer‑based architectures:
+  - **Logistic Regression** → a linear baseline classifier using TF‑IDF features.
+  - **Multinomial Naïve Bayes** → a probabilistic baseline model well‑suited for text classification.
+  - **BERT (bert‑base‑uncased)** → a transformer model fine‑tuned for email classification.
+  - **DistilBERT** → a lighter, faster version of BERT fine‑tuned for the same task
+
+Each model was evaluated on the same dataset split to ensure fair comparison.
+
+## Evaluation Metrics
+
+  Performance was measured using:
+  - **Accuracy** → overall percentage of correctly classified emails.
+  - **Classification Report** → detailed per‑class metrics including precision, recall, and F1‑score.
+
+
+## Results
+
+-----------------------------------------
+|       **Model**         | **Accuracy** | 
+| DistilBERT              |   97.39 %    | 
+| BERT                    |   95.65 %    | 
+| Logistic Regression     |   90.0 %     | 
+| Multinomial Naive Bayes |   82.0 %     | 
+------------------------------------------
+
+
+## 🚀 Key Insights
+- Transformer‑based models (BERT, DistilBERT) significantly outperform traditional ML baselines.
+- DistilBERT achieves the best trade‑off between accuracy and efficiency, making it ideal for enterprise deployment.
+- Logistic Regression provides a strong baseline with lower computational cost.
+- Naïve Bayes, while fast, struggles with nuanced language patterns in enterprise emails.
+
+
+
 
 ---
