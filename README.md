@@ -56,7 +56,7 @@ Each model was evaluated on the same dataset split to ensure fair comparison.
 
 ## Results
 
------------------------------------------
+
 |       **Model**         | **Accuracy** | 
 | DistilBERT              |   97.39 %    | 
 | BERT                    |   95.65 %    | 
