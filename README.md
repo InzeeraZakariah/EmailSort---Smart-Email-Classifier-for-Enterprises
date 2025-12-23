@@ -54,15 +54,13 @@ Each model was evaluated on the same dataset split to ensure fair comparison.
   - **Classification Report** → detailed per‑class metrics including precision, recall, and F1‑score.
 
 
-## Results
+## Accuracy Score for Each models
 
+ - DistilBERT :       97.39 %    
+ - BERT       :       95.65 %     
+ - Logistic Regression :  90.0 %     
+ - Multinomial Naive Bayes : 82.0 %      
 
-|       **Model**         | **Accuracy** | 
-| DistilBERT              |   97.39 %    | 
-| BERT                    |   95.65 %    | 
-| Logistic Regression     |   90.0 %     | 
-| Multinomial Naive Bayes |   82.0 %     | 
-------------------------------------------
 
 
 ## 🚀 Key Insights
