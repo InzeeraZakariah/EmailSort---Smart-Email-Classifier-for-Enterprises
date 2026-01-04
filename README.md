@@ -69,7 +69,45 @@ Each model was evaluated on the same dataset split to ensure fair comparison.
 - Logistic Regression provides a strong baseline with lower computational cost.
 - Naïve Bayes, while fast, struggles with nuanced language patterns in enterprise emails.
 
+##  **Email Urgency Level Prediction**
 
+### 🔎 Approach
+The urgency prediction pipeline combines **rule‑based heuristics** with **machine learning models** to classify emails into `low`, `medium`, or `high` urgency.
 
+- **Rule‑Based Layer**
+  - Detects explicit urgency keywords:
+    - *“urgent”*, *“immediately”*, *“asap”*, *“critical”* → **High urgency**
+    - *“soon”*, *“please respond”*, *“within a week”* → **Medium urgency**
+  - Acts as a pre‑classifier to boost recall for obvious urgency signals.
+
+- **Machine Learning Layer**
+  - Input: Combined subject + body text vectorized with **TF‑IDF**.
+  - Models trained:
+    - Logistic Regression
+    - Multinomial Naïve Bayes
+    - BERT (bert‑base‑uncased)
+    - DistilBERT
+
+### 📊 Evaluation Metrics
+Performance was measured using:
+- **Confusion Matrix** → to analyze misclassifications across urgency levels.
+- **Weighted F1‑Score** → accounts for class imbalance.
+
+### 🏆 Results
+| Model                  | Weighted F1‑Score |
+|-------------------------|-------------------|
+| DistilBERT              | **0.95** |
+| BERT                    | **0.95** |
+| Logistic Regression     | 0.83 |
+| Multinomial Naïve Bayes | 0.79 |
+
+### 🧩 Key Insights
+- **Transformer models (BERT, DistilBERT)** achieved the highest F1‑scores (0.95), excelling at nuanced urgency detection.
+- **Logistic Regression** is a strong lightweight option with decent performance (0.83).
+- **Naïve Bayes** underperformed (0.79), struggling with contextual urgency cues.
+- The **rule‑based layer** improved recall for the **high urgency** class by catching explicit signals.
+- Confusion matrices revealed most misclassifications occurred between **medium** and **low** urgency, reflecting subtle differences in non‑critical requests.
+
+---
 
 ---
