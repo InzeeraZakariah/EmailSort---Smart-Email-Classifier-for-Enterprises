@@ -1,7 +1,15 @@
 pandas
 numpy
 nltk
-sklearn
+scikit-learn
 torch
 transformers
-
+safetensors
+PyJWT
+fastapi
+uvicorn
+pydantic
+dotenv
+python-multipart
+streamlit
+requests
