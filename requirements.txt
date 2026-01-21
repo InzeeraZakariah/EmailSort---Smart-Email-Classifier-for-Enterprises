@@ -1,15 +1,11 @@
-pandas
-numpy
-nltk
-scikit-learn
 torch
 transformers
 safetensors
-PyJWT
 fastapi
 uvicorn
 pydantic
 dotenv
 python-multipart
-streamlit
+gradio
 requests
+
