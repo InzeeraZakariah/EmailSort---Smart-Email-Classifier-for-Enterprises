@@ -1,10 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import FastAPI
 from pydantic import BaseModel
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import re
-import jwt
 import torch
 import torch.nn.functional as F
 
@@ -12,9 +10,6 @@ from transformers import (
     DistilBertTokenizerFast,
     DistilBertForSequenceClassification
 )
-
-from dotenv import load_dotenv
-load_dotenv()
 
 # ===============================
 # App Configuration
@@ -26,40 +21,10 @@ app = FastAPI(
     version="1.0"
 )
 
-# ===============================
-# Device (IMPORTANT FOR RENDER)
-# ===============================
-
-DEVICE = torch.device("cpu")
-
-# ===============================
-# JWT Configuration
-# ===============================
-
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-if not SECRET_KEY:
-    raise RuntimeError("JWT_SECRET_KEY is not set")
-
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# ===============================
-# Demo User Store
-# ===============================
-
-USERS_DB = {
-    "admin": {
-        "username": "admin",
-        "password": "admin123"
-    }
-}
 
 # ===============================
 # Model Paths
 # ===============================
-
 CATEGORY_MODEL_DIR = "models/category_model"
 URGENCY_MODEL_DIR = "models/urgency_level_model"
 
@@ -70,36 +35,22 @@ for path in [CATEGORY_MODEL_DIR, URGENCY_MODEL_DIR]:
 # ===============================
 # Labels
 # ===============================
-
 CATEGORY_LABELS = ["Complaint", "Feedback", "Spam", "Inquiry"]
 URGENCY_LABELS = ["Low", "Medium", "High"]
 
 # ===============================
-# Load Tokenizer (OFFICIAL)
+# Load Tokenizer
 # ===============================
-
-tokenizer = DistilBertTokenizerFast.from_pretrained(
-    "distilbert-base-uncased"
-)
+tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
 
 # ===============================
-# Load Models (CPU SAFE)
+# Load Models
 # ===============================
-
 category_model = DistilBertForSequenceClassification.from_pretrained(
-    CATEGORY_MODEL_DIR,
-)
-
+    CATEGORY_MODEL_DIR)
 urgency_model = DistilBertForSequenceClassification.from_pretrained(
-    URGENCY_MODEL_DIR,
-)
+    URGENCY_MODEL_DIR)
 
-category_model.eval()
-urgency_model.eval()
-
-# ===============================
-# Schemas
-# ===============================
 
 class EmailRequest(BaseModel):
     subject: str
@@ -113,39 +64,9 @@ class PredictionResponse(BaseModel):
     urgency_source: str
     timestamp: str
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-# ===============================
-# Auth Helpers
-# ===============================
-
-def authenticate_user(username: str, password: str):
-    user = USERS_DB.get(username)
-    if not user or user["password"] != password:
-        return None
-    return user
-
-def create_access_token(data: dict, expires_delta: timedelta):
-    payload = data.copy()
-    payload["exp"] = datetime.utcnow() + expires_delta
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload.get("sub")
-    except jwt.PyJWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token"
-        )
-
 # ===============================
 # Text Preprocessing
 # ===============================
-
 def preprocess_text(subject: str, body: str):
     text = f"{subject} {body}".lower()
     text = re.sub(r"http\S+", " ", text)
@@ -156,7 +77,6 @@ def preprocess_text(subject: str, body: str):
 # ===============================
 # Rule-Based Urgency
 # ===============================
-
 HIGH_URGENCY = [
     "urgent", "asap", "immediately", "system down",
     "not working", "failed", "critical"
@@ -177,32 +97,11 @@ def hybrid_urgency(ml: str, rule: str) -> str:
     priority = {"Low": 0, "Medium": 1, "High": 2}
     return rule if priority[rule] > priority[ml] else ml
 
+# ==============================
+# Prediction Endpoint (Public)
 # ===============================
-# Auth Endpoint
-# ===============================
-
-@app.post("/token", response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = create_access_token(
-        data={"sub": user["username"]},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-
-    return {"access_token": token, "token_type": "bearer"}
-
-# ===============================
-# Prediction Endpoint
-# ===============================
-
 @app.post("/predict", response_model=PredictionResponse)
-def predict_email(
-    email: EmailRequest,
-    user: str = Depends(get_current_user)
-):
+def predict_email(email: EmailRequest):
     text = preprocess_text(email.subject, email.body)
 
     inputs = tokenizer(
@@ -213,7 +112,7 @@ def predict_email(
         max_length=256
     )
 
-    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
+    inputs = {k: v for k, v in inputs.items()}
 
     with torch.no_grad():
         cat_outputs = category_model(**inputs)
@@ -241,7 +140,6 @@ def predict_email(
 # ===============================
 # Health Check
 # ===============================
-
 @app.get("/")
 def health_check():
     return {"status": "EmailSort API running"}
