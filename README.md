@@ -247,6 +247,6 @@ EmailSort demonstrates a robust, enterprise-ready approach to intelligent email 
 
 ## Created By
 
-**Inzeera Z** 
+**Inzeera Z** ,  
 Infosys Springboard Intern (27th Nov 2025 to 27th Jan 2026)
 
