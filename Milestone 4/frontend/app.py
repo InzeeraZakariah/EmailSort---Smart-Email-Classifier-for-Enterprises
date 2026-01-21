@@ -1,231 +1,264 @@
-import streamlit as st
+import gradio as gr
 import requests
 import pandas as pd
+import matplotlib.pyplot as plt
+import json
 from datetime import datetime
-import os
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
-# ======================================================
-# Backend URLs
-# ======================================================
-BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
-PREDICT_URL = f"{BACKEND_BASE_URL}/predict"
-TOKEN_URL = f"{BACKEND_BASE_URL}/token"
+BACKEND_URL = "http://localhost:8000/predict"
 
-# ======================================================
-# Page Config
-# ======================================================
-st.set_page_config(
-    page_title="EmailSort Dashboard",
-    layout="wide",
-)
+# ===============================
+# Backend Call
+# ===============================
+def analyze_email(subject, body, history):
+    if not subject or not body:
+        raise gr.Error("Subject and Body are required")
 
-# ======================================================
-# THEME – BLUE & WHITE
-# ======================================================
-st.markdown("""
-            
-<style>
-            
-html, body, [class*="css"] {
-    font-size: 12px;
-}
-body {
-    background-color: #f5f9ff;
-    color: #0a2540;
-}
-            
+    payload = {"subject": subject, "body": body}
+    response = requests.post(BACKEND_URL, json=payload)
 
-section[data-testid="stSidebar"] {
-    background-color: black;
-    border-right: 1px solid #e5edff;
-}
+    if response.status_code != 200:
+        raise gr.Error("FastAPI backend not reachable")
 
-.nav-item {
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    border: 1px solid #d6e4ff;
-    font-weight: 40;
-    cursor: pointer;
-}
+    result = response.json()
 
-.nav-item:hover {
-    background-color: #eaf1ff;
-}
+    record = {
+        "subject": subject,
+        "body": body,
+        "category": result["category"],
+        "category_confidence": result["category_confidence"],
+        "urgency": result["urgency"],
+        "urgency_confidence": result["urgency_confidence"],
+        "timestamp": result["timestamp"]
+    }
 
-.nav-active {
-    background-color: black
-    color: white;
-    border: 1px solid #0a58ff;
-}
+    history.append(record)
 
-.metric-card {
-    background: white;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-}
-</style>
-""", unsafe_allow_html=True)
+    ui_result = f"""
+### 📧 Email Analysis Result
 
-# ======================================================
-# MOCK DATA
-# ======================================================
-def load_mock_data():
-    now = datetime.utcnow()
-    return [
-        {"Timestamp": now, "Category": "Complaint", "Category Confidence": 0.92, "Urgency": "High", "Urgency Confidence": 0.88},
-        {"Timestamp": now, "Category": "Inquiry", "Category Confidence": 0.86, "Urgency": "Medium", "Urgency Confidence": 0.75},
-        {"Timestamp": now, "Category": "Feedback", "Category Confidence": 0.89, "Urgency": "Low", "Urgency Confidence": 0.70},
-        {"Timestamp": now, "Category": "Spam", "Category Confidence": 0.99, "Urgency": "Low", "Urgency Confidence": 0.96},
-    ]
+**Category:** `{result['category']}`  
+**Category Confidence:** `{result['category_confidence'] * 100:.2f}%`
 
-# ======================================================
-# SESSION STATE
-# ======================================================
-if "page" not in st.session_state:
-    st.session_state.page = "Overview"
+**Urgency Level:** `{result['urgency']}`  
+**Urgency Confidence:** `{result['urgency_confidence'] * 100:.2f}%`
 
-if "token" not in st.session_state:
-    st.session_state.token = None
+**Analyzed At:** `{result['timestamp']}`
+"""
 
-if "analytics_data" not in st.session_state:
-    st.session_state.analytics_data = load_mock_data()
+    return gr.Markdown(ui_result), history
 
-# ======================================================
-# LOGIN (JWT)
-# ======================================================
-if st.session_state.token is None:
-    st.title("EmailSort Login")
 
-    with st.form("login"):
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        submit = st.form_submit_button("Login")
+# ===============================
+# Analytics with Slicers
+# ===============================
+def generate_analytics(history, category_filter, urgency_filter, date_range):
+    if not history:
+        return "No data available", None, None, None
 
-    if submit:
-        res = requests.post(
-            TOKEN_URL,
-            data={"username": username, "password": password}
-        )
-        if res.status_code == 200:
-            st.session_state.token = res.json()["access_token"]
-            st.rerun()
-        else:
-            st.error("Invalid credentials")
+    df = pd.DataFrame(history)
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
 
-    st.stop()
+    # -----------------------------
+    # Apply slicers
+    # -----------------------------
+    if category_filter != "All":
+        df = df[df["category"] == category_filter]
 
-# ======================================================
-# SIDEBAR NAVIGATION (CUSTOM CLICKABLE ITEMS)
-# ======================================================
-st.sidebar.title("Menu")
-st.title("EmailSort")
-st.subheader("Your smart AI-powered Email Category Classifier and Urgency Level Predictor")
+    if urgency_filter != "All":
+        df = df[df["urgency"] == urgency_filter]
 
-def nav_item(label):
-    active = "nav-active" if st.session_state.page == label else ""
-    if st.sidebar.markdown(
-        f'<div class="nav-item {active}">{label}</div>',
-        unsafe_allow_html=True
-    ):
-        st.session_state.page = label
+    if date_range:
+        start, end = date_range
+        df = df[
+            (df["timestamp"].dt.date >= start) &
+            (df["timestamp"].dt.date <= end)
+        ]
 
-for item in ["Overview", "Email Classification", "Urgency Level", "Analytics"]:
-    if st.sidebar.button(item, use_container_width=True):
-        st.session_state.page = item
+    if df.empty:
+        return "No data after applying filters", None, None, None
 
-page = st.session_state.page
+    # -----------------------------
+    # KPI Calculations
+    # -----------------------------
+    total_emails = len(df)
+    top_category = df["category"].mode()[0]
+    high_urgency_pct = round(
+        (df["urgency"].value_counts().get("High", 0) / total_emails) * 100, 2
+    )
 
-# ======================================================
-# OVERVIEW (MOCK)
-# ======================================================
-if page == "Overview":
-    st.title("Overview")
+    kpi_text = f"""
+## 📊 Key Metrics
 
-    df = pd.DataFrame(st.session_state.analytics_data)
+🔹 **Total Emails:** `{total_emails}`  
+🔹 **Top Category:** `{top_category}`  
+🔹 **High Urgency %:** `{high_urgency_pct}%`
+"""
 
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Emails Processed", len(df))
-    c2.metric("High Urgency", (df["Urgency"] == "High").sum())
-    c3.metric("Spam Detected", (df["Category"] == "Spam").sum())
+    # -----------------------------
+    # Category Bar Chart
+    # -----------------------------
+    fig1, ax1 = plt.subplots(figsize=(5, 4))
+    df["category"].value_counts().plot(
+        kind="bar",
+        color="#0b5ed7",
+        ax=ax1
+    )
+    ax1.set_title("Email Category Distribution")
+    ax1.set_xlabel("Category")
+    ax1.set_ylabel("Count")
 
-    st.subheader("Category Distribution")
-    st.bar_chart(df["Category"].value_counts())
+    # -----------------------------
+    # Urgency Donut Chart
+    # -----------------------------
+    fig2, ax2 = plt.subplots(figsize=(5, 4))
+    urgency_counts = df["urgency"].value_counts()
 
-    st.subheader("Urgency Distribution")
-    st.bar_chart(df["Urgency"].value_counts())
+    ax2.pie(
+        urgency_counts,
+        labels=urgency_counts.index,
+        autopct="%1.1f%%",
+        startangle=90,
+        colors=["#cfe2ff", "#6ea8fe", "#084298"],
+        wedgeprops=dict(width=0.4)
+    )
+    ax2.set_title("Urgency Level Distribution")
 
-# ======================================================
-# EMAIL CLASSIFICATION (REAL BACKEND)
-# ======================================================
-elif page == "Email Classification":
-    st.title("Category Classify")
+    # -----------------------------
+    # Trend Line Chart
+    # -----------------------------
+    fig3, ax3 = plt.subplots(figsize=(10, 4))
+    df.groupby(df["timestamp"].dt.date).size().plot(
+        kind="line",
+        marker="o",
+        color="#0b5ed7",
+        ax=ax3
+    )
+    ax3.set_title("Email Volume Over Time")
+    ax3.set_xlabel("Date")
+    ax3.set_ylabel("Email Count")
 
-    subject = st.text_input("Email Subject")
-    body = st.text_area("Email Body", height=220)
+    return kpi_text, fig1, fig2, fig3
 
-    if st.button("Classify Email"):
-        headers = {"Authorization": f"Bearer {st.session_state.token}"}
-        res = requests.post(
-            PREDICT_URL,
-            json={"subject": subject, "body": body},
-            headers=headers
-        )
 
-        if res.status_code == 200:
-            r = res.json()
-            st.success(
-                f"Category: {r['category']} "
-                f"({r['category_confidence']*100:.2f}%)"
+# ===============================
+# Downloads
+# ===============================
+def download_csv(history):
+    if not history:
+        return None
+    df = pd.DataFrame(history)
+    path = "email_results.csv"
+    df.to_csv(path, index=False)
+    return path
+
+
+def download_pdf(history):
+    if not history:
+        return None
+
+    path = "email_report.pdf"
+    c = canvas.Canvas(path, pagesize=A4)
+    text = c.beginText(40, 800)
+    text.setFont("Helvetica", 10)
+
+    text.textLine("EmailSort – Analytics Report")
+    text.textLine("-" * 70)
+
+    for i, record in enumerate(history, start=1):
+        text.textLine(f"{i}. Subject: {record['subject']}")
+        text.textLine(f"   Category: {record['category']} ({record['category_confidence']})")
+        text.textLine(f"   Urgency: {record['urgency']} ({record['urgency_confidence']})")
+        text.textLine(f"   Timestamp: {record['timestamp']}")
+        text.textLine("")
+
+    c.drawText(text)
+    c.save()
+    return path
+
+
+# ===============================
+# UI
+# ===============================
+with gr.Blocks(
+    title="EmailSort AI",
+    css="""
+    body { background-color: #f8fbff; }
+    h1, h2, h3 { color: #0b5ed7; }
+    .gr-button { background-color: #0b5ed7 !important; color: white !important; }
+    """
+) as demo:
+
+    gr.Markdown("# 📬 EmailSort Dashboard")
+    gr.Markdown("### Enterprise Email Classification & Analytics")
+
+    history = gr.State([])
+
+    with gr.Tabs():
+
+        # -------------------------
+        # Analyze
+        # -------------------------
+        with gr.Tab("Analyze Email"):
+            subject = gr.Textbox(label="Email Subject")
+            body = gr.Textbox(label="Email Body", lines=6)
+            analyze_btn = gr.Button("Analyze Email")
+
+            result_output = gr.Markdown()
+
+            analyze_btn.click(
+                analyze_email,
+                inputs=[subject, body, history],
+                outputs=[result_output, history]
             )
-        else:
-            st.error("Backend error")
 
-# ======================================================
-# URGENCY LEVEL (REAL BACKEND)
-# ======================================================
-elif page == "Urgency Level":
-    st.title("Urgency Detection")
+        # -------------------------
+        # Analytics (Power BI Style)
+        # -------------------------
+        with gr.Tab("Analytics"):
+            gr.Markdown("## 📊 Analytics Dashboard")
 
-    subject = st.text_input("Email Subject", key="u1")
-    body = st.text_area("Email Body", height=220, key="u2")
+            with gr.Row():
+                category_filter = gr.Dropdown(
+                    ["All", "Complaint", "Feedback", "Spam", "Inquiry"],
+                    label="Category"
+                )
+                urgency_filter = gr.Dropdown(
+                    ["All", "Low", "Medium", "High"],
+                    label="Urgency"
+                )
 
-    if st.button("Detect Urgency"):
-        headers = {"Authorization": f"Bearer {st.session_state.token}"}
-        res = requests.post(
-            PREDICT_URL,
-            json={"subject": subject, "body": body},
-            headers=headers
-        )
+            refresh_btn = gr.Button("Apply Filters")
 
-        if res.status_code == 200:
-            r = res.json()
-            st.success(
-                f"Urgency: {r['urgency']} "
-                f"({r['urgency_confidence']*100:.2f}%)"
+            kpi_output = gr.Markdown()
+
+            with gr.Row():
+                category_plot = gr.Plot()
+                urgency_plot = gr.Plot()
+
+            trend_plot = gr.Plot()
+
+            refresh_btn.click(
+                generate_analytics,
+                inputs=[history, category_filter, urgency_filter],
+                outputs=[kpi_output, category_plot, urgency_plot, trend_plot]
             )
-        else:
-            st.error("Backend error")
 
-# ======================================================
-# ANALYTICS (MOCK)
-# ======================================================
-elif page == "Analytics":
-    st.title("Analytics")
+        # -------------------------
+        # Downloads
+        # -------------------------
+        with gr.Tab("Download"):
+            gr.Markdown("### Export Results")
 
-    df = pd.DataFrame(st.session_state.analytics_data)
-    df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+            csv_btn = gr.Button("Download CSV")
+            pdf_btn = gr.Button("Download PDF Report")
 
-    st.subheader("Category Distribution")
-    st.bar_chart(df["Category"].value_counts())
+            file_output = gr.File()
 
-    st.subheader("Urgency Distribution")
-    st.bar_chart(df["Urgency"].value_counts())
+            csv_btn.click(download_csv, inputs=history, outputs=file_output)
+            pdf_btn.click(download_pdf, inputs=history, outputs=file_output)
 
-    st.subheader("Emails Over Time")
-    time_df = df.set_index("Timestamp").resample("1T").count()
-    st.line_chart(time_df["Category"])
 
-    st.subheader("Analytics Table")
-    st.dataframe(df, use_container_width=True)
+demo.launch(share=True)
