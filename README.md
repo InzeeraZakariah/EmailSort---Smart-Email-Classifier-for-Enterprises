@@ -245,6 +245,8 @@ EmailSort demonstrates a robust, enterprise-ready approach to intelligent email 
 
 ---
 
+**Deployment Link:** https://huggingface.co/spaces/Inzeera/EmailSort
+
 ## Created By
 
 **Inzeera Z** ,  
