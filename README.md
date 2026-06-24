@@ -72,3 +72,4 @@ The system combines **TF‑IDF vectorization**, classical ML models, and fine‑
 ## 👩‍💻 Author  
 **Inzeera Z**  
 Infosys Springboard Intern (Nov 2025 – Jan 2026)  
+Infosys Springboard Virtual Internship 6.0
